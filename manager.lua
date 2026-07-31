@@ -174,48 +174,55 @@ function handle_selection(sel, has_installed)
     sleep(1)
   end
 
-  if sel == "item5" then
-    term.clear()
-    print("Are you sure you want to uninstall everything? (Y/N)")
-    while true do
-      local event, key = os.pullEvent("key")
-      if key == keys.y or key == keys.Y then
-        print("Uninstalling...")
-        if clear then
-          clear.clean_all()
-        else
-          -- Fallback
-          local files = {
-            "startup.lua", "manager.lua",
-            "Transmitter.lua", "Receiver.lua",
-            "transmitter.lua", "receiver.lua",
-            "startupinstall.lua", "mouse.lua",
-            "Core/Events/mouse.lua",
-            "Core/UserInterface/Main_UI.lua",
-            "Core/Utils/ClearOldFile.lua"
-          }
-          for _, f in ipairs(files) do
-            if fs.exists(f) then fs.delete(f) end
-          end
-          if fs.exists("Module") then
-            local items = fs.list("Module")
-            for _, item in ipairs(items) do
-              fs.delete(fs.combine("Module", item))
-            end
-            fs.delete("Module")
-          end
-        end
-        print("Uninstall complete. Rebooting...")
-        sleep(1)
-        os.reboot()
-        return
-      elseif key == keys.n or key == keys.N then
-        print("Uninstall cancelled.")
-        sleep(1)
-        return
-      end
+if sel == "item5" then
+  term.clear()
+  print("Are you sure you want to uninstall everything? (Y/N)")
+  while true do
+    local event, key = os.pullEvent("key")
+    if key == keys.y or key == keys.Y then
+      print("Creating uninstall script...")
+      local f = fs.open("uninstall.lua", "w")
+      f.write([[
+print("Uninstalling...")
+local files = {
+  "startup.lua", "manager.lua",
+  "Transmitter.lua", "Receiver.lua",
+  "transmitter.lua", "receiver.lua",
+  "startupinstall.lua", "mouse.lua",
+  "Core/Events/mouse.lua",
+  "Core/UserInterface/Main_UI.lua",
+  "Core/Utils/ClearOldFile.lua",
+  "uninstall.lua"
+}
+for _, f in ipairs(files) do
+  if fs.exists(f) then
+    fs.delete(f)
+    print("Deleted: " .. f)
+  end
+end
+if fs.exists("Module") then
+  local items = fs.list("Module")
+  for _, item in ipairs(items) do
+    fs.delete(fs.combine("Module", item))
+  end
+  fs.delete("Module")
+end
+print("Uninstall complete. Rebooting...")
+sleep(1)
+os.reboot()
+]])
+      f.close()
+      print("Running uninstall script...")
+      sleep(1)
+      shell.run("uninstall.lua")
+      return
+    elseif key == keys.n or key == keys.N then
+      print("Uninstall cancelled.")
+      sleep(1)
+      return
     end
   end
+end
 
   if sel == "item6" then
     term.clear()
