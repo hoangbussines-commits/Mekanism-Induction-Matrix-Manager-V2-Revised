@@ -29,6 +29,7 @@ function M.draw(selected, has_installed)
     "Install Receiver Module",
     "Delete Receiver Module",
     "Delete Transmitter Module",
+    "Uninstall Software",
     "Exit Manage",
   }
   
