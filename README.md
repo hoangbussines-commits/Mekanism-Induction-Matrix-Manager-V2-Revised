@@ -8,5 +8,6 @@ https://pastebin.com/3naSaR8X
 > https://pastebin.com/LMdUZY4Z
 
 #**FORKED BY hoangbussines-commits**
-> Organizations: JuliHyro Studios
-> License:  Apache 2.0
+> Organizations: JuliHyro Studios  
+
+**License:** Apache 2.0
