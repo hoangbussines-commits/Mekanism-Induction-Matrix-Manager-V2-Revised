@@ -5,8 +5,8 @@
 ]]
 
 local MODULES = {
-  transmitter = "modules/Transmitter.lua",
-  receiver    = "modules/Receiver.lua",
+  transmitter = "Module/Transmitter.lua",
+  receiver    = "Module/Receiver.lua",
 }
 
 local config_file = "config"
