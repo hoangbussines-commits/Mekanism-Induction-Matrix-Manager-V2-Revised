@@ -1,5 +1,5 @@
 --[[
-  Induction Matrix Manager V2 (GUI Edition) - Mouse + Keyboard Support
+  Induction Matrix Manager V2 (GUI Edition)
   Revised by hoangbussines-commits (JuliHyro Studios)
   Original Author: WOLFE_BR
 ]]
@@ -13,6 +13,7 @@ local MODULES = {
 
 local mode_file = ".mode"
 
+-- Helper functions
 function file_read(file)
   local f = fs.open(file, "r")
   if not f then return nil end
@@ -53,20 +54,40 @@ function ensure_module_folder()
   end
 end
 
-function clean_old_files()
-  print("Cleaning old files...")
-  local legacy_files = {
-    "Transmitter.lua", "Receiver.lua",
-    "transmitter.lua", "receiver.lua",
-    "startupinstall.lua"
-  }
-  for _, file in ipairs(legacy_files) do
+-- Central download function
+function download_file(url, dest)
+  print("Downloading " .. dest .. "...")
+  shell.run("wget", url, dest)
+  if fs.exists(dest) then
+    print("Done: " .. dest)
+    return true
+  else
+    print("Failed: " .. dest)
+    return false
+  end
+end
+
+-- Central cleanup function
+function clean_files(file_list)
+  for _, file in ipairs(file_list) do
     if fs.exists(file) then
       fs.delete(file)
       print("Removed: " .. file)
       sleep(0.1)
     end
   end
+end
+
+function clean_old_files()
+  print("Cleaning old files...")
+  local legacy_files = {
+    "Transmitter.lua", "Receiver.lua",
+    "transmitter.lua", "receiver.lua",
+    "startupinstall.lua",
+    "mouse.lua", -- old location
+    "Core/Events/mouse.lua"
+  }
+  clean_files(legacy_files)
   print("Cleanup done.")
   sleep(0.5)
 end
@@ -109,19 +130,6 @@ function draw_menu(selected, has_installed)
   print("  Use UP/DOWN or Mouse Click to select, ENTER or Double Click to confirm.")
 end
 
-function get_item_at_position(y)
-  -- Map screen row to menu item
-  local row_map = {
-    [5] = "run",
-    [7] = "item1",
-    [8] = "item2",
-    [9] = "item3",
-    [10] = "item4",
-    [11] = "item5",
-  }
-  return row_map[y]
-end
-
 function handle_selection(sel, has_installed)
   if sel == "run" and has_installed then
     local mod = get_selected_module()
@@ -143,7 +151,7 @@ function handle_selection(sel, has_installed)
     print("Downloading Transmitter Module...")
     ensure_module_folder()
     local url = REPO_RAW .. "/Module/Transmitter.lua"
-    shell.run("wget", url, MODULES.transmitter)
+    download_file(url, MODULES.transmitter)
     if fs.exists(MODULES.transmitter) then
       set_selected_module("transmitter")
       print("Done! Transmitter installed.")
@@ -158,7 +166,7 @@ function handle_selection(sel, has_installed)
     print("Downloading Receiver Module...")
     ensure_module_folder()
     local url = REPO_RAW .. "/Module/Receiver.lua"
-    shell.run("wget", url, MODULES.receiver)
+    download_file(url, MODULES.receiver)
     if fs.exists(MODULES.receiver) then
       set_selected_module("receiver")
       print("Done! Receiver installed.")
@@ -202,6 +210,25 @@ end
 ensure_module_folder()
 clean_old_files()
 
+-- Ensure Core/Events folder and mouse.lua exist
+if not fs.exists("Core/Events") then
+  fs.makeDir("Core/Events")
+  print("Created Core/Events folder.")
+end
+
+if not fs.exists("Core/Events/mouse.lua") then
+  download_file(REPO_RAW .. "/Core/Events/mouse.lua", "Core/Events/mouse.lua")
+end
+
+-- Load mouse support
+local mouse = nil
+if fs.exists("Core/Events/mouse.lua") then
+  mouse = dofile("Core/Events/mouse.lua")
+  print("Mouse support loaded.")
+else
+  print("Mouse support not found. Keyboard only.")
+end
+
 local menu_items = { "run", "item1", "item2", "item3", "item4", "item5" }
 local selected_index = 2
 local running = true
@@ -242,27 +269,18 @@ while running do
       handle_selection(selected, has_installed)
     end
 
- elseif event == "mouse_click" then
-  local button, x, y = p1, p2, p3
-  if button == 1 then
-    local clicked_item = get_item_at_position(y, current_list, has_installed)
-    if clicked_item then
-      local current_time = os.clock()
-      if clicked_item == last_click_item and (current_time - last_click_time) < 0.5 then
-        handle_selection(clicked_item, has_installed)
-        last_click_item = nil
-        last_click_time = 0
-      else
-        for i, item in ipairs(current_list) do
-          if item == clicked_item then
-            selected_index = i
-            break
-          end
-        end
-        last_click_item = clicked_item
-        last_click_time = current_time
-      end
+  elseif event == "mouse_click" and mouse then
+    local new_index, new_time, new_item, action = mouse.handle(
+      event, p1, p2, p3, p4,
+      current_list, has_installed,
+      selected_index, last_click_time, last_click_item
+    )
+    if action then
+      handle_selection(action, has_installed)
+    else
+      selected_index = new_index
+      last_click_time = new_time
+      last_click_item = new_item
     end
   end
 end
-
