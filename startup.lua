@@ -4,6 +4,9 @@
   Original Author: WOLFE_BR
 ]]
 
+-- Repository settings
+local REPO_RAW = "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main"
+
 local MODULES = {
   transmitter = "Module/Transmitter.lua",
   receiver    = "Module/Receiver.lua",
@@ -63,6 +66,7 @@ function draw_menu(selected, has_installed)
     "Install Receiver Module",
     "Delete Receiver Module",
     "Delete Transmitter Module",
+    "Exit Manage",
   }
   
   for i, text in ipairs(items) do
@@ -96,18 +100,28 @@ function handle_selection(sel, has_installed)
   if sel == "item1" then
     term.clear()
     print("Downloading Transmitter Module...")
-    shell.run("wget", "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/Module/transmitter.lua", MODULES.transmitter)
-    set_selected_module("transmitter")
-    print("Done! Transmitter installed.")
+    local url = REPO_RAW .. "/Module/Transmitter.lua"
+    shell.run("wget", url, MODULES.transmitter)
+    if fs.exists(MODULES.transmitter) then
+      set_selected_module("transmitter")
+      print("Done! Transmitter installed.")
+    else
+      print("Download failed! Check URL or connection.")
+    end
     sleep(1)
   end
 
   if sel == "item2" then
     term.clear()
     print("Downloading Receiver Module...")
-    shell.run("wget", "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/Module/receiver.lua", MODULES.receiver)
-    set_selected_module("receiver")
-    print("Done! Receiver installed.")
+    local url = REPO_RAW .. "/Module/Receiver.lua"
+    shell.run("wget", url, MODULES.receiver)
+    if fs.exists(MODULES.receiver) then
+      set_selected_module("receiver")
+      print("Done! Receiver installed.")
+    else
+      print("Download failed! Check URL or connection.")
+    end
     sleep(1)
   end
 
@@ -132,30 +146,42 @@ function handle_selection(sel, has_installed)
     end
     sleep(1)
   end
+
+  if sel == "item5" then
+    term.clear()
+    print("Exiting Manager...")
+    sleep(0.5)
+    os.shutdown()
+  end
 end
 
 -- Main program
-local menu_items = { "run", "item1", "item2", "item3", "item4" }
-local selected_index = 2  -- default to "Install Transmitter Module"
+local menu_items = { "run", "item1", "item2", "item3", "item4", "item5" }
+local selected_index = 2
 local running = true
 
--- Create modules folder if not exists
-if not fs.exists("modules") then
-  fs.makeDir("modules")
+-- Create Module folder if not exists
+if not fs.exists("Module") then
+  fs.makeDir("Module")
+end
+
+-- Ensure auto-boot file exists
+if not fs.exists("startupinstall.lua") then
+  local f = fs.open("startupinstall.lua", "w")
+  f.write('shell.run("startup.lua")\n')
+  f.close()
 end
 
 while running do
   local has_installed = is_module_installed("transmitter") or is_module_installed("receiver")
   
-  -- If no program installed, disable "run" option
   local current_list = {}
   if has_installed then
-    current_list = { "run", "item1", "item2", "item3", "item4" }
+    current_list = { "run", "item1", "item2", "item3", "item4", "item5" }
   else
-    current_list = { "item1", "item2", "item3", "item4" }
+    current_list = { "item1", "item2", "item3", "item4", "item5" }
   end
 
-  -- Clamp selected index
   if selected_index > #current_list then
     selected_index = #current_list
   end
