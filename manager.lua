@@ -101,7 +101,7 @@ function draw_menu(selected, has_installed)
   
   if has_installed then
     if selected == "run" then
-      print("  > [ Run the installed program ]")
+      print("  > [ [ Run the installed program ] ]")
     else
       print("    [ Run the installed program ]")
     end
@@ -121,7 +121,7 @@ function draw_menu(selected, has_installed)
   for i, text in ipairs(items) do
     local key = "item" .. i
     if selected == key then
-      print("  > " .. text)
+      print("  > [ " .. text .. " ]")
     else
       print("    " .. text)
     end
