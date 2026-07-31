@@ -13,13 +13,19 @@ local MODULES = {
 
 local mode_file = ".mode"
 
--- Load centralized cleanup utility (already downloaded by bootloader)
+-- Load cleanup utility
 local clear = nil
 if fs.exists("Core/Utils/ClearOldFile.lua") then
   clear = dofile("Core/Utils/ClearOldFile.lua")
-  print("Cleanup utility loaded.")
+end
+
+-- Load UI
+local ui = nil
+if fs.exists("Core/UserInterface/Main_UI.lua") then
+  ui = dofile("Core/UserInterface/Main_UI.lua")
+  print("UI loaded.")
 else
-  print("WARNING: Cleanup utility not found. Using fallback.")
+  print("WARNING: UI not found. Using fallback.")
 end
 
 -- Helper functions
@@ -63,7 +69,6 @@ function ensure_module_folder()
   end
 end
 
--- Central download function
 function download_file(url, dest)
   print("Downloading " .. dest .. "...")
   shell.run("wget", url, dest)
@@ -80,7 +85,7 @@ function clean_old_files()
   if clear then
     clear.clean_all()
   else
-    -- Fallback manual cleanup
+    -- Fallback
     print("Cleaning old files (fallback)...")
     local legacy_files = {
       "Transmitter.lua", "Receiver.lua",
@@ -99,44 +104,6 @@ function clean_old_files()
     print("Cleanup done.")
     sleep(0.5)
   end
-end
-
-function draw_menu(selected, has_installed)
-  term.clear()
-  term.setCursorPos(1,1)
-  print("  INDUCTION MATRIX MANAGER V2 MANAGE")
-  print("  -----------------------------------")
-  print("")
-  
-  if has_installed then
-    if selected == "run" then
-      print("  > [ [ Run the installed program ] ]")
-    else
-      print("    [ Run the installed program ]")
-    end
-  else
-    print("    (no program installed)")
-  end
-  print("")
-  
-  local items = {
-    "Install Transmitter Module",
-    "Install Receiver Module",
-    "Delete Receiver Module",
-    "Delete Transmitter Module",
-    "Exit Manage",
-  }
-  
-  for i, text in ipairs(items) do
-    local key = "item" .. i
-    if selected == key then
-      print("  > [ " .. text .. " ]")
-    else
-      print("    " .. text)
-    end
-  end
-  print("")
-  print("  Use UP/DOWN or Mouse Click to select, ENTER or Double Click to confirm.")
 end
 
 function handle_selection(sel, has_installed)
@@ -219,6 +186,16 @@ end
 clean_old_files()
 ensure_module_folder()
 
+-- Ensure Core/UserInterface folder and Main_UI.lua exist
+if not fs.exists("Core/UserInterface") then
+  fs.makeDir("Core/UserInterface")
+  print("Created Core/UserInterface folder.")
+end
+
+if not fs.exists("Core/UserInterface/Main_UI.lua") then
+  download_file(REPO_RAW .. "/Core/UserInterface/Main_UI.lua", "Core/UserInterface/Main_UI.lua")
+end
+
 -- Ensure Core/Events folder and mouse.lua exist
 if not fs.exists("Core/Events") then
   fs.makeDir("Core/Events")
@@ -227,6 +204,11 @@ end
 
 if not fs.exists("Core/Events/mouse.lua") then
   download_file(REPO_RAW .. "/Core/Events/mouse.lua", "Core/Events/mouse.lua")
+end
+
+-- Reload UI if just downloaded
+if fs.exists("Core/UserInterface/Main_UI.lua") then
+  ui = dofile("Core/UserInterface/Main_UI.lua")
 end
 
 -- Load mouse support
@@ -262,7 +244,17 @@ while running do
   end
 
   local selected = current_list[selected_index]
-  draw_menu(selected, has_installed)
+  
+  if ui then
+    ui.draw(selected, has_installed)
+  else
+    -- Fallback draw (in case UI is missing)
+    term.clear()
+    term.setCursorPos(1,1)
+    print("ERROR: UI missing, please reinstall.")
+    sleep(2)
+    os.reboot()
+  end
 
   local event, p1, p2, p3, p4 = os.pullEvent()
 
