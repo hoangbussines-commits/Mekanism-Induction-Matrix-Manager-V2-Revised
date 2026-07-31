@@ -176,6 +176,49 @@ function handle_selection(sel, has_installed)
 
   if sel == "item5" then
     term.clear()
+    print("Are you sure you want to uninstall everything? (Y/N)")
+    while true do
+      local event, key = os.pullEvent("key")
+      if key == keys.y or key == keys.Y then
+        print("Uninstalling...")
+        if clear then
+          clear.clean_all()
+        else
+          -- Fallback
+          local files = {
+            "startup.lua", "manager.lua",
+            "Transmitter.lua", "Receiver.lua",
+            "transmitter.lua", "receiver.lua",
+            "startupinstall.lua", "mouse.lua",
+            "Core/Events/mouse.lua",
+            "Core/UserInterface/Main_UI.lua",
+            "Core/Utils/ClearOldFile.lua"
+          }
+          for _, f in ipairs(files) do
+            if fs.exists(f) then fs.delete(f) end
+          end
+          if fs.exists("Module") then
+            local items = fs.list("Module")
+            for _, item in ipairs(items) do
+              fs.delete(fs.combine("Module", item))
+            end
+            fs.delete("Module")
+          end
+        end
+        print("Uninstall complete. Rebooting...")
+        sleep(1)
+        os.reboot()
+        return
+      elseif key == keys.n or key == keys.N then
+        print("Uninstall cancelled.")
+        sleep(1)
+        return
+      end
+    end
+  end
+
+  if sel == "item6" then
+    term.clear()
     print("Exiting Manager...")
     sleep(0.5)
     os.shutdown()
@@ -220,7 +263,7 @@ else
   print("Mouse support not found. Keyboard only.")
 end
 
-local menu_items = { "run", "item1", "item2", "item3", "item4", "item5" }
+local menu_items = { "run", "item1", "item2", "item3", "item4", "item5", "item6" }
 local selected_index = 2
 local running = true
 local last_click_time = 0
@@ -231,9 +274,9 @@ while running do
   
   local current_list = {}
   if has_installed then
-    current_list = { "run", "item1", "item2", "item3", "item4", "item5" }
+    current_list = { "run", "item1", "item2", "item3", "item4", "item5", "item6" }
   else
-    current_list = { "item1", "item2", "item3", "item4", "item5" }
+    current_list = { "item1", "item2", "item3", "item4", "item5", "item6" }
   end
 
   if selected_index > #current_list then
