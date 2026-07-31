@@ -1,5 +1,8 @@
 # Mekanism Induction Matrix Manager V2 (Revised)
-
+[![Discord](https://img.shields.io/badge/Discord-JuliHyro%20Studios-5865F2?logo=discord&logoColor=white)](https://discord.gg/bubAnnEgw8)
+[![NeoForge](https://img.shields.io/badge/NeoForge-1.21.1-00A3E0?logo=neo4j&logoColor=white)](https://neoforged.net/)
+[![Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![ComputerCraft](https://img.shields.io/badge/CC:Tweaked-1.120.0-orange)](https://computercraft.cc/)
 **Forked from WOLFE_BR**  
 **Modified by hoangbussines-commits (JuliHyro Studios)**  
 **License: Apache 2.0**
