@@ -242,33 +242,27 @@ while running do
       handle_selection(selected, has_installed)
     end
 
-  elseif event == "mouse_click" then
-    local button, x, y = p1, p2, p3
-    if button == 1 then -- left click
-      local clicked_item = get_item_at_position(y)
-      if clicked_item then
-        -- Check if click is on menu area (x >= 3)
-        if x >= 3 then
-          -- Double click detection
-          local current_time = os.clock()
-          if clicked_item == last_click_item and (current_time - last_click_time) < 0.5 then
-            -- Double click: confirm selection
-            handle_selection(clicked_item, has_installed)
-            last_click_item = nil
-            last_click_time = 0
-          else
-            -- Single click: move selection
-            for i, item in ipairs(current_list) do
-              if item == clicked_item then
-                selected_index = i
-                break
-              end
-            end
-            last_click_item = clicked_item
-            last_click_time = current_time
+ elseif event == "mouse_click" then
+  local button, x, y = p1, p2, p3
+  if button == 1 then
+    local clicked_item = get_item_at_position(y, current_list, has_installed)
+    if clicked_item then
+      local current_time = os.clock()
+      if clicked_item == last_click_item and (current_time - last_click_time) < 0.5 then
+        handle_selection(clicked_item, has_installed)
+        last_click_item = nil
+        last_click_time = 0
+      else
+        for i, item in ipairs(current_list) do
+          if item == clicked_item then
+            selected_index = i
+            break
           end
         end
+        last_click_item = clicked_item
+        last_click_time = current_time
       end
     end
   end
 end
+
