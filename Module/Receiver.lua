@@ -33,7 +33,7 @@ local options = {
 --------------------------------------------------
  
 --- This will be used as the installer source (Pastebin)
-local INSTALLER_ID = '3naSaR8X'
+--- local INSTALLER_ID = '3naSaR8X' -none use
  
 --- Supported energy suffixes
 local energy_suffixes = { 'k', 'M', 'G', 'T', 'P' }
@@ -261,7 +261,7 @@ if 'install' == args[1] then
   end
  
   -- Downloads script from Pastebin
-  shell.run('pastebin', 'get', INSTALLER_ID, 'startup.lua')
+  -- shell.run('pastebin', 'get', INSTALLER_ID, 'startup.lua')  -- non use
  
   -- Runs config editor
   if not has_existing_install then
