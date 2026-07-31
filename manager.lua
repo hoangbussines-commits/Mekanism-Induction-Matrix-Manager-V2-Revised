@@ -4,7 +4,6 @@
   Original Author: WOLFE_BR
 ]]
 
--- Repository settings
 local REPO_RAW = "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main"
 
 local MODULES = {
@@ -14,7 +13,6 @@ local MODULES = {
 
 local mode_file = ".mode"
 
--- Helper functions
 function file_read(file)
   local f = fs.open(file, "r")
   if not f then return nil end
@@ -43,11 +41,34 @@ function get_selected_module()
 end
 
 function ensure_module_folder()
+  if fs.exists("Module") and not fs.isDir("Module") then
+    fs.delete("Module")
+    print("Removed file 'Module' to create folder.")
+    sleep(0.5)
+  end
   if not fs.exists("Module") then
     fs.makeDir("Module")
     print("Module folder created.")
     sleep(0.5)
   end
+end
+
+function clean_old_files()
+  print("Cleaning old files...")
+  local legacy_files = {
+    "Transmitter.lua", "Receiver.lua",
+    "transmitter.lua", "receiver.lua",
+    "startupinstall.lua"
+  }
+  for _, file in ipairs(legacy_files) do
+    if fs.exists(file) then
+      fs.delete(file)
+      print("Removed: " .. file)
+      sleep(0.1)
+    end
+  end
+  print("Cleanup done.")
+  sleep(0.5)
 end
 
 function draw_menu(selected, has_installed)
@@ -164,13 +185,13 @@ function handle_selection(sel, has_installed)
   end
 end
 
--- Main program
+-- Main
+ensure_module_folder()
+clean_old_files()
+
 local menu_items = { "run", "item1", "item2", "item3", "item4", "item5" }
 local selected_index = 2
 local running = true
-
--- Ensure Module folder exists
-ensure_module_folder()
 
 while running do
   local has_installed = is_module_installed("transmitter") or is_module_installed("receiver")
@@ -190,7 +211,6 @@ while running do
   end
 
   local selected = current_list[selected_index]
-
   draw_menu(selected, has_installed)
 
   local event, key = os.pullEvent("key")
