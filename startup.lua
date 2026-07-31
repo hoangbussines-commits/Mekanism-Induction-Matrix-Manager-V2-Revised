@@ -6,14 +6,30 @@
 
 print("=== Induction Matrix Manager V2 ===")
 
+-- Ensure Core/Utils folder exists
+if not fs.exists("Core/Utils") then
+  fs.makeDir("Core/Utils")
+  print("Created Core/Utils folder.")
+end
+
+-- Download cleanup utility if not exists
+if not fs.exists("Core/Utils/ClearOldFile.lua") then
+  print("Downloading cleanup utility...")
+  shell.run("wget", "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/Core/Utils/ClearOldFile.lua", "Core/Utils/ClearOldFile.lua")
+end
+
 -- Load cleanup utility
 local clear = nil
 if fs.exists("Core/Utils/ClearOldFile.lua") then
   clear = dofile("Core/Utils/ClearOldFile.lua")
+  print("Cleanup utility loaded.")
+else
+  print("ERROR: Cannot load cleanup utility.")
 end
 
 -- Check if software already installed
 if clear and clear.is_installed() then
+  print("")
   print("You have installed software on this computer!")
   print("Are you sure you want to reinstall/update it? (Y/N)")
   while true do
@@ -27,15 +43,6 @@ if clear and clear.is_installed() then
       return
     end
   end
-end
-
--- Download Core/Utils/ClearOldFile.lua if not exists
-if not fs.exists("Core/Utils") then
-  fs.makeDir("Core/Utils")
-end
-if not fs.exists("Core/Utils/ClearOldFile.lua") then
-  print("Downloading cleanup utility...")
-  shell.run("wget", "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/Core/Utils/ClearOldFile.lua", "Core/Utils/ClearOldFile.lua")
 end
 
 -- Download manager.lua
