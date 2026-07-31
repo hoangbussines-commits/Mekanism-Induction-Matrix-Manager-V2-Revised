@@ -13,6 +13,15 @@ local MODULES = {
 
 local mode_file = ".mode"
 
+-- Load centralized cleanup utility (already downloaded by bootloader)
+local clear = nil
+if fs.exists("Core/Utils/ClearOldFile.lua") then
+  clear = dofile("Core/Utils/ClearOldFile.lua")
+  print("Cleanup utility loaded.")
+else
+  print("WARNING: Cleanup utility not found. Using fallback.")
+end
+
 -- Helper functions
 function file_read(file)
   local f = fs.open(file, "r")
@@ -67,29 +76,29 @@ function download_file(url, dest)
   end
 end
 
--- Central cleanup function
-function clean_files(file_list)
-  for _, file in ipairs(file_list) do
-    if fs.exists(file) then
-      fs.delete(file)
-      print("Removed: " .. file)
-      sleep(0.1)
-    end
-  end
-end
-
 function clean_old_files()
-  print("Cleaning old files...")
-  local legacy_files = {
-    "Transmitter.lua", "Receiver.lua",
-    "transmitter.lua", "receiver.lua",
-    "startupinstall.lua",
-    "mouse.lua", -- old location
-    "Core/Events/mouse.lua"
-  }
-  clean_files(legacy_files)
-  print("Cleanup done.")
-  sleep(0.5)
+  if clear then
+    clear.clean_all()
+  else
+    -- Fallback manual cleanup
+    print("Cleaning old files (fallback)...")
+    local legacy_files = {
+      "Transmitter.lua", "Receiver.lua",
+      "transmitter.lua", "receiver.lua",
+      "startupinstall.lua",
+      "mouse.lua",
+      "Core/Events/mouse.lua"
+    }
+    for _, file in ipairs(legacy_files) do
+      if fs.exists(file) then
+        fs.delete(file)
+        print("Removed: " .. file)
+        sleep(0.1)
+      end
+    end
+    print("Cleanup done.")
+    sleep(0.5)
+  end
 end
 
 function draw_menu(selected, has_installed)
@@ -207,8 +216,8 @@ function handle_selection(sel, has_installed)
 end
 
 -- Main
-ensure_module_folder()
 clean_old_files()
+ensure_module_folder()
 
 -- Ensure Core/Events folder and mouse.lua exist
 if not fs.exists("Core/Events") then
