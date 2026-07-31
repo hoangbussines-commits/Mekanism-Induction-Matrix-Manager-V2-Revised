@@ -1,13 +1,36 @@
-**MEKANISM INDUCTION MATRIX MANAGER REVISED VERSION**
-# **This is a modified version of the original Pastebin Repo**
+# Mekanism Induction Matrix Manager V2 (Revised)
 
-> Original Author: WOLFE_BR
-> Original Pastebin Receiver Module: 
-https://pastebin.com/3naSaR8X
-> Original Pastebin Transmitter Module:
-> https://pastebin.com/LMdUZY4Z
+**Forked from WOLFE_BR**  
+**Modified by hoangbussines-commits (JuliHyro Studios)**  
+**License: Apache 2.0**
 
-#**FORKED BY hoangbussines-commits**
-> Organizations: JuliHyro Studios  
+## Installation
+`wget run https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/startup.lua`
 
-**License:** Apache 2.0
+## Features
+- GUI Manager (Mouse + Keyboard)
+- Install / Remove Transmitter & Receiver
+- Auto-boot
+- Full Uninstaller
+
+## Credits
+- Original: WOLFE_BR
+- Transmitter: https://pastebin.com/LMdUZY4Z
+- Receiver: https://pastebin.com/3naSaR8X
+
+## DISCLAIMER
+
+This project is a revised and modified version of the original work created by WOLFE_BR. 
+All modifications, enhancements, and additional features have been implemented independently 
+by hoangbussines-commits (JuliHyro Studios) and are not affiliated with, endorsed by, 
+or the responsibility of the original author.
+
+This software is provided "as is", without warranty of any kind, express or implied, 
+including but not limited to the warranties of merchantability, fitness for a particular 
+purpose, and noninfringement. In no event shall the original author (WOLFE_BR) or the 
+modified author (hoangbussines-commits) be held liable for any claim, damages, or other 
+liability, whether in an action of contract, tort, or otherwise, arising from, out of, 
+or in connection with the software or the use or other dealings in the software.
+
+By using this software, you acknowledge that you understand and accept these terms 
+and assume full responsibility for any consequences arising from its use.
