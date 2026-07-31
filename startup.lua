@@ -100,8 +100,15 @@ function handle_selection(sel, has_installed)
   if sel == "item1" then
     term.clear()
     print("Downloading Transmitter Module...")
+    
+    if not fs.exists("Module") then
+      fs.makeDir("Module")
+      print("Module folder created.")
+    end
+
     local url = REPO_RAW .. "/Module/Transmitter.lua"
     shell.run("wget", url, MODULES.transmitter)
+    
     if fs.exists(MODULES.transmitter) then
       set_selected_module("transmitter")
       print("Done! Transmitter installed.")
@@ -114,8 +121,15 @@ function handle_selection(sel, has_installed)
   if sel == "item2" then
     term.clear()
     print("Downloading Receiver Module...")
+    
+    if not fs.exists("Module") then
+      fs.makeDir("Module")
+      print("Module folder created.")
+    end
+
     local url = REPO_RAW .. "/Module/Receiver.lua"
     shell.run("wget", url, MODULES.receiver)
+    
     if fs.exists(MODULES.receiver) then
       set_selected_module("receiver")
       print("Done! Receiver installed.")
@@ -163,13 +177,21 @@ local running = true
 -- Create Module folder if not exists
 if not fs.exists("Module") then
   fs.makeDir("Module")
+  print("Module folder created.")
 end
 
 -- Ensure auto-boot file exists
 if not fs.exists("startupinstall.lua") then
+  print("Installing Autoboot...")
   local f = fs.open("startupinstall.lua", "w")
-  f.write('shell.run("startup.lua")\n')
+  f.write([[
+print("=== Induction Matrix Manager V2 ===")
+print("Auto-booting into Manager...")
+shell.run("startup.lua")
+]])
   f.close()
+  print("Autoboot installed.")
+  sleep(1)
 end
 
 while running do
