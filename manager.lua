@@ -1,5 +1,5 @@
 --[[
-  Induction Matrix Manager V2 (GUI Edition)
+  Induction Matrix Manager V2 (GUI Edition) - Mouse + Keyboard Support
   Revised by hoangbussines-commits (JuliHyro Studios)
   Original Author: WOLFE_BR
 ]]
@@ -106,7 +106,20 @@ function draw_menu(selected, has_installed)
     end
   end
   print("")
-  print("  Use UP/DOWN to select, ENTER to confirm.")
+  print("  Use UP/DOWN or Mouse Click to select, ENTER or Double Click to confirm.")
+end
+
+function get_item_at_position(y)
+  -- Map screen row to menu item
+  local row_map = {
+    [5] = "run",
+    [7] = "item1",
+    [8] = "item2",
+    [9] = "item3",
+    [10] = "item4",
+    [11] = "item5",
+  }
+  return row_map[y]
 end
 
 function handle_selection(sel, has_installed)
@@ -192,6 +205,8 @@ clean_old_files()
 local menu_items = { "run", "item1", "item2", "item3", "item4", "item5" }
 local selected_index = 2
 local running = true
+local last_click_time = 0
+local last_click_item = nil
 
 while running do
   local has_installed = is_module_installed("transmitter") or is_module_installed("receiver")
@@ -213,19 +228,47 @@ while running do
   local selected = current_list[selected_index]
   draw_menu(selected, has_installed)
 
-  local event, key = os.pullEvent("key")
+  local event, p1, p2, p3, p4 = os.pullEvent()
 
-  if key == keys.up then
-    selected_index = selected_index - 1
-    if selected_index < 1 then
-      selected_index = #current_list
+  if event == "key" then
+    local key = p1
+    if key == keys.up then
+      selected_index = selected_index - 1
+      if selected_index < 1 then selected_index = #current_list end
+    elseif key == keys.down then
+      selected_index = selected_index + 1
+      if selected_index > #current_list then selected_index = 1 end
+    elseif key == keys.enter then
+      handle_selection(selected, has_installed)
     end
-  elseif key == keys.down then
-    selected_index = selected_index + 1
-    if selected_index > #current_list then
-      selected_index = 1
+
+  elseif event == "mouse_click" then
+    local button, x, y = p1, p2, p3
+    if button == 1 then -- left click
+      local clicked_item = get_item_at_position(y)
+      if clicked_item then
+        -- Check if click is on menu area (x >= 3)
+        if x >= 3 then
+          -- Double click detection
+          local current_time = os.clock()
+          if clicked_item == last_click_item and (current_time - last_click_time) < 0.5 then
+            -- Double click: confirm selection
+            handle_selection(clicked_item, has_installed)
+            last_click_item = nil
+            last_click_time = 0
+          else
+            -- Single click: move selection
+            for i, item in ipairs(current_list) do
+              if item == clicked_item then
+                selected_index = i
+                break
+              end
+            end
+            last_click_item = clicked_item
+            last_click_time = current_time
+          end
+        end
+      end
     end
-  elseif key == keys.enter then
-    handle_selection(selected, has_installed)
   end
 end
