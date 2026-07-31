@@ -1,11 +1,16 @@
 --[[
-  Wolfe's Mekanism Induction Matrix Monitor v2
+  Wolfe's Mekanism Induction Matrix Monitor v2 (Revised Edition) - TRANSMITTER MODULE
   Usage: Put computer near an Induction Port and a monitor (2x3 array should work fine) and install. Optionally add a modem for wireless functionality (requires restart).
-  Installation: pastebin run LMdUZY4Z install
-  Configuration: Edit the "config" file, refer to the comments below for what each field means
- 
-  Wireless Usage: Doesn't require a Monitor on main PC, just a Modem, just make sure you add an identifier on config file.
-  Wireless Receiver: Use script at https://pastebin.com/3naSaR8X
+  
+  Installation (Revised): 
+    wget run https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/startup.lua
+  
+  Wireless Usage: This module BROADCASTS matrix data over Rednet.
+  Wireless Receiver: Use the Receiver module at 
+    https://github.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/blob/main/modules/receiver.lua
+
+  Revised by hoangbussines-commits (JuliHyro Studios) under Apache 2.0 License
+  Original Author: WOLFE_BR
 ]]
  
 -- Default settings, do not change
