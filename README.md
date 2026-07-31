@@ -4,6 +4,11 @@
 **Modified by hoangbussines-commits (JuliHyro Studios)**  
 **License: Apache 2.0**
 
+## Recommendations
+- **Minecraft Version:** 1.21.1 (recommended, tested)
+- **ComputerCraft Version (CC:Tweaked):** 1.21.1 - Build 1.120.0 (recommended, tested)
+- **Modloader Type:** NeoForge (recommended, tested)
+
 ## Installation
 `wget run https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/startup.lua`
 
@@ -19,7 +24,6 @@
 - Receiver: https://pastebin.com/3naSaR8X
 
 ## DISCLAIMER
-
 This project is a revised and modified version of the original work created by WOLFE_BR. 
 All modifications, enhancements, and additional features have been implemented independently 
 by hoangbussines-commits (JuliHyro Studios) and are not affiliated with, endorsed by, 
