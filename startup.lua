@@ -6,8 +6,10 @@
 
 print("=== Induction Matrix Manager V2 ===")
 
--- Check if running from RAM
-local is_running_from_ram = not fs.exists("startup.lua")
+-- Check if this is a fresh install (from wget run)
+-- When running via wget run, arg[0] is usually empty or "startup.lua"
+-- But the safest way: if manager.lua doesn't exist -> fresh install
+local is_fresh_install = not fs.exists("manager.lua") and not fs.exists("startup.lua")
 
 -- Ensure Core/Utils folder exists
 if not fs.exists("Core/Utils") then
@@ -30,8 +32,8 @@ else
   print("ERROR: Cannot load cleanup utility.")
 end
 
--- Only ask for uninstall if this is a fresh wget run and software already exists
-if is_running_from_ram and clear and clear.is_installed() then
+-- Only show uninstall warning if this is a fresh install and software already exists
+if is_fresh_install and clear and clear.is_installed() then
   print("")
   print("You have installed software on this computer!")
   print("Are you sure you want to reinstall/update it? (Y/N)")
@@ -48,7 +50,7 @@ if is_running_from_ram and clear and clear.is_installed() then
   end
 end
 
--- Save bootloader to disk (if not already saved)
+-- Save bootloader to disk if not already saved
 if not fs.exists("startup.lua") then
   print("Saving bootloader to disk...")
   shell.run("wget", "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/startup.lua", "startup.lua")
