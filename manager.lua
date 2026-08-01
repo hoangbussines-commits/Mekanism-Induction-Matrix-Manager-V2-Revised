@@ -294,7 +294,7 @@ while running do
 
   local selected = current_list[selected_index]
   
-  -- Tạo window ở giữa màn hình
+  -- Create centered window
   local w, h = term.getSize()
   local win_width = math.min(60, w - 2)
   local win_height = math.min(14, h - 2)
