@@ -5,39 +5,23 @@
 
 local M = {}
 
--- Draw menu
 function M.draw(selected, has_installed)
   term.clear()
-  local w, h = term.getSize()
-  local title = "INDUCTION MATRIX MANAGER V2 MANAGE"
-  local line = "-----------------------------------"
-  
-  local title_x = math.floor((w - #title) / 2) + 1
-  local line_x = math.floor((w - #line) / 2) + 1
-  
-  term.setCursorPos(title_x, 1)
-  print(title)
-  term.setCursorPos(line_x, 2)
-  print(line)
-  
-  local y = 4
+  term.setCursorPos(1,1)
+  print("  INDUCTION MATRIX MANAGER V2 MANAGE")
+  print("  -----------------------------------")
+  print("")
   
   if has_installed then
-    local text = "[ Run the installed program ]"
     if selected == "run" then
-      text = "[ [ Run the installed program ] ]"
+      print("  > [ [ Run the installed program ] ]")
+    else
+      print("    [ Run the installed program ]")
     end
-    local x = math.floor((w - #text) / 2) + 1
-    term.setCursorPos(x, y)
-    print(text)
-    y = y + 2
   else
-    local text = "(no program installed)"
-    local x = math.floor((w - #text) / 2) + 1
-    term.setCursorPos(x, y)
-    print(text)
-    y = y + 2
+    print("    (no program installed)")
   end
+  print("")
   
   local items = {
     "Install Transmitter Module",
@@ -50,22 +34,14 @@ function M.draw(selected, has_installed)
   
   for i, text in ipairs(items) do
     local key = "item" .. i
-    local display_text = text
     if selected == key then
-      display_text = "[ " .. text .. " ]"
+      print("  > [ " .. text .. " ]")
+    else
+      print("    " .. text)
     end
-    local x = math.floor((w - #display_text) / 2) + 1
-    term.setCursorPos(x, y + i - 1)
-    print(display_text)
   end
-  
-  local help_text = "Use UP/DOWN or Mouse Click to select, ENTER or Double Click to confirm."
-  local help_x = math.floor((w - #help_text) / 2) + 1
-  local help_y = y + #items + 2
-  if help_y <= h then
-    term.setCursorPos(help_x, help_y)
-    print(help_text)
-  end
+  print("")
+  print("  Use UP/DOWN or Mouse Click to select, ENTER or Double Click to confirm.")
 end
 
 function M.get_item_at_position(y, current_list, has_installed)
