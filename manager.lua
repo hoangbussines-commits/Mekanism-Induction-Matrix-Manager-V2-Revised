@@ -85,7 +85,6 @@ function clean_old_files()
   if clear then
     clear.clean_old_files()
   else
-    -- Fallback
     print("Cleaning old files (fallback)...")
     local legacy_files = {
       "Transmitter.lua", "Receiver.lua",
@@ -174,15 +173,15 @@ function handle_selection(sel, has_installed)
     sleep(1)
   end
 
-if sel == "item5" then
-  term.clear()
-  print("Are you sure you want to uninstall everything? (Y/N)")
-  while true do
-    local event, key = os.pullEvent("key")
-    if key == keys.y or key == keys.Y then
-      print("Creating uninstall script...")
-      local f = fs.open("uninstall.lua", "w")
-      f.write([[
+  if sel == "item5" then
+    term.clear()
+    print("Are you sure you want to uninstall everything? (Y/N)")
+    while true do
+      local event, key = os.pullEvent("key")
+      if key == keys.y or key == keys.Y then
+        print("Creating uninstall script...")
+        local f = fs.open("uninstall.lua", "w")
+        f.write([[
 print("Uninstalling...")
 local files = {
   "startup.lua", "manager.lua",
@@ -211,18 +210,18 @@ print("Uninstall complete. Rebooting...")
 sleep(1)
 os.reboot()
 ]])
-      f.close()
-      print("Running uninstall script...")
-      sleep(1)
-      shell.run("uninstall.lua")
-      return
-    elseif key == keys.n or key == keys.N then
-      print("Uninstall cancelled.")
-      sleep(1)
-      return
+        f.close()
+        print("Running uninstall script...")
+        sleep(1)
+        shell.run("uninstall.lua")
+        return
+      elseif key == keys.n or key == keys.N then
+        print("Uninstall cancelled.")
+        sleep(1)
+        return
+      end
     end
   end
-end
 
   if sel == "item6" then
     term.clear()
@@ -297,8 +296,8 @@ while running do
   
   -- Tạo window ở giữa màn hình
   local w, h = term.getSize()
-  local win_width = 50
-  local win_height = 12
+  local win_width = math.min(60, w - 2)
+  local win_height = math.min(14, h - 2)
   local win_x = math.floor((w - win_width) / 2) + 1
   local win_y = math.floor((h - win_height) / 2) + 1
   local main_window = window.create(term.current(), win_x, win_y, win_width, win_height, true)
@@ -316,36 +315,6 @@ while running do
   end
   
   term.redirect(term.current())
-  
-  local event, p1, p2, p3, p4 = os.pullEvent()
-
-  if event == "key" then
-    local key = p1
-    if key == keys.up then
-      selected_index = selected_index - 1
-      if selected_index < 1 then selected_index = #current_list end
-    elseif key == keys.down then
-      selected_index = selected_index + 1
-      if selected_index > #current_list then selected_index = 1 end
-    elseif key == keys.enter then
-      handle_selection(selected, has_installed)
-    end
-
-  elseif event == "mouse_click" and mouse then
-    local new_index, new_time, new_item, action = mouse.handle(
-      event, p1, p2, p3, p4,
-      current_list, has_installed,
-      selected_index, last_click_time, last_click_item
-    )
-    if action then
-      handle_selection(action, has_installed)
-    else
-      selected_index = new_index
-      last_click_time = new_time
-      last_click_item = new_item
-    end
-  end
-end
 
   local event, p1, p2, p3, p4 = os.pullEvent()
 
