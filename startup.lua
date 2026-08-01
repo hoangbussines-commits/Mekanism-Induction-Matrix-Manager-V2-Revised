@@ -6,6 +6,9 @@
 
 print("=== Induction Matrix Manager V2 ===")
 
+-- Check if running from RAM
+local is_running_from_ram = not fs.exists("startup.lua")
+
 -- Ensure Core/Utils folder exists
 if not fs.exists("Core/Utils") then
   fs.makeDir("Core/Utils")
@@ -27,8 +30,8 @@ else
   print("ERROR: Cannot load cleanup utility.")
 end
 
--- Check if software already installed
-if clear and clear.is_installed() then
+-- Only ask for uninstall if this is a fresh wget run and software already exists
+if is_running_from_ram and clear and clear.is_installed() then
   print("")
   print("You have installed software on this computer!")
   print("Are you sure you want to reinstall/update it? (Y/N)")
