@@ -9,27 +9,33 @@ local M = {}
 function M.draw(selected, has_installed)
   term.clear()
   local w, h = term.getSize()
-  local center_x = math.floor(w / 2) - 10
+  local title = "INDUCTION MATRIX MANAGER V2 MANAGE"
+  local line = "-----------------------------------"
   
-  -- Title
-  term.setCursorPos(center_x, 1)
-  print("INDUCTION MATRIX MANAGER V2 MANAGE")
-  term.setCursorPos(center_x, 2)
-  print("-----------------------------------")
+  local title_x = math.floor((w - #title) / 2) + 1
+  local line_x = math.floor((w - #line) / 2) + 1
+  
+  term.setCursorPos(title_x, 1)
+  print(title)
+  term.setCursorPos(line_x, 2)
+  print(line)
   
   local y = 4
   
   if has_installed then
-    term.setCursorPos(center_x, y)
+    local text = "[ Run the installed program ]"
     if selected == "run" then
-      print("> [ [ Run the installed program ] ]")
-    else
-      print("  [ Run the installed program ]")
+      text = "[ [ Run the installed program ] ]"
     end
+    local x = math.floor((w - #text) / 2) + 1
+    term.setCursorPos(x, y)
+    print(text)
     y = y + 2
   else
-    term.setCursorPos(center_x, y)
-    print("(no program installed)")
+    local text = "(no program installed)"
+    local x = math.floor((w - #text) / 2) + 1
+    term.setCursorPos(x, y)
+    print(text)
     y = y + 2
   end
   
@@ -44,20 +50,24 @@ function M.draw(selected, has_installed)
   
   for i, text in ipairs(items) do
     local key = "item" .. i
-    term.setCursorPos(center_x, y + i - 1)
+    local display_text = text
     if selected == key then
-      print("> [ " .. text .. " ]")
-    else
-      print("  " .. text)
+      display_text = "[ " .. text .. " ]"
     end
+    local x = math.floor((w - #display_text) / 2) + 1
+    term.setCursorPos(x, y + i - 1)
+    print(display_text)
   end
   
-  y = y + #items + 2
-  term.setCursorPos(center_x, y)
-  print("Use UP/DOWN or Mouse Click to select, ENTER or Double Click to confirm.")
+  local help_text = "Use UP/DOWN or Mouse Click to select, ENTER or Double Click to confirm."
+  local help_x = math.floor((w - #help_text) / 2) + 1
+  local help_y = y + #items + 2
+  if help_y <= h then
+    term.setCursorPos(help_x, help_y)
+    print(help_text)
+  end
 end
 
--- Get item at mouse click position
 function M.get_item_at_position(y, current_list, has_installed)
   local start_row = 4
   if not has_installed then
