@@ -295,16 +295,57 @@ while running do
 
   local selected = current_list[selected_index]
   
+  -- Tạo window ở giữa màn hình
+  local w, h = term.getSize()
+  local win_width = 50
+  local win_height = 12
+  local win_x = math.floor((w - win_width) / 2) + 1
+  local win_y = math.floor((h - win_height) / 2) + 1
+  local main_window = window.create(term.current(), win_x, win_y, win_width, win_height, true)
+  
+  term.redirect(main_window)
+  
   if ui then
     ui.draw(selected, has_installed)
   else
-    -- Fallback draw (in case UI is missing)
     term.clear()
     term.setCursorPos(1,1)
     print("ERROR: UI missing, please reinstall.")
     sleep(2)
     os.reboot()
   end
+  
+  term.redirect(term.current())
+  
+  local event, p1, p2, p3, p4 = os.pullEvent()
+
+  if event == "key" then
+    local key = p1
+    if key == keys.up then
+      selected_index = selected_index - 1
+      if selected_index < 1 then selected_index = #current_list end
+    elseif key == keys.down then
+      selected_index = selected_index + 1
+      if selected_index > #current_list then selected_index = 1 end
+    elseif key == keys.enter then
+      handle_selection(selected, has_installed)
+    end
+
+  elseif event == "mouse_click" and mouse then
+    local new_index, new_time, new_item, action = mouse.handle(
+      event, p1, p2, p3, p4,
+      current_list, has_installed,
+      selected_index, last_click_time, last_click_item
+    )
+    if action then
+      handle_selection(action, has_installed)
+    else
+      selected_index = new_index
+      last_click_time = new_time
+      last_click_item = new_item
+    end
+  end
+end
 
   local event, p1, p2, p3, p4 = os.pullEvent()
 
