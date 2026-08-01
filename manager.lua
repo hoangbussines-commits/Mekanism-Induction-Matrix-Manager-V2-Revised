@@ -83,7 +83,7 @@ end
 
 function clean_old_files()
   if clear then
-    clear.clean_all()
+    clear.clean_old_files()
   else
     -- Fallback
     print("Cleaning old files (fallback)...")
