@@ -45,6 +45,14 @@ if clear and clear.is_installed() then
   end
 end
 
+-- Save bootloader to disk (so it auto-runs after reboot)
+if not fs.exists("startup.lua") or fs.getSize("startup.lua") == 0 then
+  print("Saving bootloader to disk...")
+  shell.run("wget", "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/startup.lua", "startup.lua")
+  print("Bootloader saved!")
+  sleep(1)
+end
+
 -- Download manager.lua
 print("Downloading Manager...")
 shell.run("wget", "https://raw.githubusercontent.com/hoangbussines-commits/Mekanism-Induction-Matrix-Manager-V2-Revised/main/manager.lua", "manager.lua")
